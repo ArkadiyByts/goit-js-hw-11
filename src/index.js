@@ -29,9 +29,11 @@ function loadMoreImg() {
 }
 
 function fetchImg() {
+  if (searchInput.value !== '') { 
     getImages(searchInput.value.trim(), currentPage)
-    .then(res => renderImg(res))
-    .catch(error => error);
+      .then(res => renderImg(res))
+      .catch(error => error);
+  }
 }
 
 function renderImg({ hits, totalHits }) {
@@ -76,20 +78,26 @@ function renderImg({ hits, totalHits }) {
 
 
   remainingImages = totalHits - currentPage * 40;
-  checkingLeftImages();
-
-  if (remainingImages <= 0) {
-    Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-  } else if (remainingImages > 0 && remainingImages === totalHits) {
-    Notiflix.Notify.info(
-      "We're sorry, but you've reached the end of search results."
-    );
-  } else if (remainingImages > 0 && currentPage === 1) {
+  
+  if (remainingImages === 0 || totalHits < 40) {
     Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
-  }
+  } else {
 
+    checkingLeftImages();
+
+    if (remainingImages === 0) {
+      Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+    
+    } else if (remainingImages > 0 && remainingImages === totalHits) {
+      Notiflix.Notify.info(
+        "We're sorry, but you've reached the end of search results."
+      );
+    } else if (remainingImages > 0 && currentPage === 1) {
+      Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+    }
+  }
   const lightbox = new SimpleLightbox('.gallery a');
 }
 
